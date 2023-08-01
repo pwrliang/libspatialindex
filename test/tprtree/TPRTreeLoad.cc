@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 		id_type id;
 		size_t op;
 		double ax, vx, ay, vy, ct, rt, unused;
-		double plow[2], phigh[2];
+		double plow[2], phigh[2]; // boundary of moving region
 		double pvlow[2], pvhigh[2];
 
 		while (fin)

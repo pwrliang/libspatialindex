@@ -245,6 +245,7 @@ int main(int argc, char** argv)
 		}
 		else if (op == QUERY)
 		{
+            // xlow xhigh ylow yhigh tlow thigh
 			TimeRectangle query = TimeRectangle(ax, vx, ay, vy, ct, rt);
 			std::map<size_t, MovingPoint>::iterator it;
 			for (it = data.begin(); it != data.end(); it++)

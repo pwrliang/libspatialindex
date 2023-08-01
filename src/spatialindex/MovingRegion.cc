@@ -378,7 +378,7 @@ bool MovingRegion::intersectsRegionInTime(const IInterval& ivPeriod, const Movin
 
 	// I use projected low and high because they are faster and it does not matter.
 	// The are also necessary for calculating the intersection point with reference time instant 0.0.
-
+    // Figure 6
 	for (uint32_t cDim = 0; cDim < m_dimension; ++cDim)
 	{
 	assert(

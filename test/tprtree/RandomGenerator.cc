@@ -66,19 +66,20 @@ RandomGenerator::MyMovingObject* RandomGenerator::createObject(int id, int st, d
 	int t1 = o->m_st + m_maximumUpdateInterval;
 	int t2;
 
+    // t2 is the timestamp of out of bounds
 	for (t2 = st; t2 <= m_simulationLength; t2++)
 	{
 		if (o->getX(t2) > m_maxX || o->getY(t2) > m_maxY || o->getX(t2) < 0.0 || o->getY(t2) < 0.0) break;
 	}
 
 	o->m_outOfBounds = (t2 < t1) ? true : false;
-	int t = min(t1, t2);
+	int t = min(t1, t2); // next update time point
 
 	if (t == st) t++;
-	if (t < m_simulationLength)
+	if (t < m_simulationLength) // has next update
 	{
 		m_updateArray[t].insert(o->m_id);
-		o->m_kt = t;
+		o->m_kt = t; // kill time?
 	}
 
 	return o;
@@ -91,17 +92,19 @@ double RandomGenerator::generateSpeed()
 
 void RandomGenerator::generate()
 {
+    // for repeat invoking generate, free existing objects
 	for (map<int, MyMovingObject*>::iterator itDataset = m_dataset.begin(); itDataset != m_dataset.end(); itDataset++)
 	{
 		delete (*itDataset).second;
 	}
 	m_dataset.clear();
 
+    // for each timestamp of simulation
 	for (int cIndex = 0; cIndex < m_simulationLength; cIndex++)
 	{
 		m_updateArray[cIndex].clear();
 	}
-
+    // update count per tick
 	int updatesPerTimeInstant = (int) ceil(((double) m_datasetSize) * m_agility);
 
 	for (int cObject = 0; cObject < m_datasetSize; cObject++)
@@ -118,8 +121,10 @@ void RandomGenerator::generate()
 		int cTotalUpdates = 0;
 		int cNeedToUpdate = updatesPerTimeInstant;
 		set<int> updated;
+        // id of updates
 		set<int>::iterator itUpdateArray = m_updateArray[Tnow].begin();
 
+        // has to update or objects at this time can be updated
 		while (cNeedToUpdate > 0 || itUpdateArray != m_updateArray[Tnow].end())
 		{
 			int id;
@@ -131,7 +136,8 @@ void RandomGenerator::generate()
 				itUpdateArray++;
 			}
 			else
-			{
+			{  // no updatable objects at this time point
+                // pick an object hasn't updated
 				id = m_random.nextUniformLong(0, m_datasetSize);
 				set<int>::iterator itUpdated = updated.find(id);
 
@@ -154,12 +160,16 @@ void RandomGenerator::generate()
 			cout << o->m_id << " " << DELETE << " " << Tnow << " " << o->m_st << " 1 " << o->m_sx << " " << o->m_vx
 					 << " 1 " << o->m_sy << " " << o->m_vy << endl;
 
+            // will insert into m_dataset
 			if (bKilled && o->m_outOfBounds)
 			{
+                // will be updated and out of bound
+                // place to a new position
 				createObject(o->m_id, Tnow, 0.0, m_maxX, 0.0, m_maxY);
 			}
 			else
 			{
+                // next position
 				createObject(o->m_id, Tnow, o->getX(Tnow), o->getY(Tnow));
 			}
 
@@ -172,9 +182,11 @@ void RandomGenerator::generate()
 			double y = m_random.nextUniformDouble(0.0, m_maxY);
 			double dx = m_random.nextUniformDouble(m_minQueryExtent, m_maxQueryExtent);
 			double dy = m_random.nextUniformDouble(m_minQueryExtent, m_maxQueryExtent);
-			int dt = m_random.nextUniformLong(m_minQueryInterval, m_maxQueryInterval);
+			int dt = m_random.nextUniformLong(m_minQueryInterval, m_maxQueryInterval); // query window
 			int t = m_random.nextUniformLong(Tnow, Tnow + m_horizon - dt);
 
+            // horizion = index usage time (U) + query window (T)
+            // begin and end of query window
 			cout << "9999999 " << QUERY << " " << t << " " << t + dt << " 1 " << x - dx << " " << x + dx << " 1 " << y - dy << " " << y + dy << endl;
 		}
 

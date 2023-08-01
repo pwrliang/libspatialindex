@@ -319,7 +319,7 @@ Node& Node::operator=(const Node&)
 bool Node::insertEntry(uint32_t dataLength, uint8_t* pData, MovingRegion& mbr, id_type id)
 {
 	assert(m_children < m_capacity);
-
+    // mbr: moving region being inserted
 	m_pDataLength[m_children] = dataLength;
 	m_pData[m_children] = pData;
 	m_ptrMBR[m_children] = m_pTree->m_regionPool.acquire();
@@ -328,7 +328,7 @@ bool Node::insertEntry(uint32_t dataLength, uint8_t* pData, MovingRegion& mbr, i
 
 	m_totalDataLength += dataLength;
 	++m_children;
-
+    // current node is not the latest
 	if (m_nodeMBR.m_startTime != m_pTree->m_currentTime)
 	{
 		m_nodeMBR.m_startTime = m_pTree->m_currentTime;
@@ -340,6 +340,7 @@ bool Node::insertEntry(uint32_t dataLength, uint8_t* pData, MovingRegion& mbr, i
 			m_nodeMBR.m_pVLow[cDim] = std::numeric_limits<double>::max();
 			m_nodeMBR.m_pVHigh[cDim] = -std::numeric_limits<double>::max();
 
+            // enlarge the boundaries of the node with mbr being inserted
 			for (uint32_t cChild = 0; cChild < m_children; ++cChild)
 			{
 				m_nodeMBR.m_pLow[cDim] = std::min(m_nodeMBR.m_pLow[cDim], m_ptrMBR[cChild]->getExtrapolatedLow(cDim, m_nodeMBR.m_startTime));
@@ -353,10 +354,11 @@ bool Node::insertEntry(uint32_t dataLength, uint8_t* pData, MovingRegion& mbr, i
 	}
 	else if (
 		//m_nodeMBR.m_pLow[0] != std::numeric_limits<double>::max() &&
-		! m_nodeMBR.containsRegionAfterTime(m_pTree->m_currentTime, mbr))
+		! m_nodeMBR.containsRegionAfterTime(m_pTree->m_currentTime, mbr)) // the node cannot contain the mbr
 	{
 		for (uint32_t cDim = 0; cDim < m_nodeMBR.m_dimension; ++cDim)
 		{
+            // calculate the new boundaries
 			double l = m_nodeMBR.getExtrapolatedLow(cDim, m_pTree->m_currentTime);
 			double rl = mbr.getExtrapolatedLow(cDim, m_pTree->m_currentTime);
 			if (rl <= l)
@@ -448,7 +450,7 @@ bool Node::insertData(uint32_t dataLength, uint8_t* pData, MovingRegion& mbr, id
 	if (m_children < m_capacity)
 	{
 		bool bNeedToAdjust = insertEntry(dataLength, pData, mbr, id);
-		m_pTree->writeNode(this);
+		m_pTree->writeNode(this); // write to the storage
 
 		if (bNeedToAdjust && ! pathBuffer.empty())
 		{

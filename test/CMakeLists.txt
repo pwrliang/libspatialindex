@@ -55,6 +55,7 @@ set(SOURCES
         Generator
         TPRTreeLoad
         TPRTreeQuery
+        TPRTreeMemory
         )
 
 

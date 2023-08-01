@@ -100,6 +100,7 @@ int main(int argc, char** argv)
 	g.m_maxSpeed = 0.0166; // 100 miles/hour = 1.66 miles/minute
 	g.m_speedMean = 0.005; // 30 miles/hour = 0.5 miles/minute
 	g.m_speedStandardDeviation = 0.0033; // 20 miles/hour = 0.33 miles/minute
+    g.m_queriesPerTimeInstant = 1000;
 
 	g.generate();
 }

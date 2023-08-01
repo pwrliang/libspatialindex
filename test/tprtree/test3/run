@@ -1,0 +1,8 @@
+#! /bin/bash
+
+echo Generating dataset
+test-tprtree-Generator -ds 1000000 -sl 100 > d
+
+echo Creating new TPR-Tree
+test-tprtree-TPRTreeMemory d 20
+

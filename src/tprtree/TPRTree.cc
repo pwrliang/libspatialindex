@@ -258,9 +258,10 @@ void SpatialIndex::TPRTree::TPRTree::insertData(uint32_t len, const uint8_t* pDa
 	if (pivI == nullptr) throw Tools::IllegalArgumentException("insertData: Shape does not support the Tools::IInterval interface.");
 
 	if (pivI->getLowerBound() < m_currentTime) throw Tools::IllegalArgumentException("insertData: Shape start time is older than tree current time.");
-
+    // copy low,high from MovingRegion
 	Region mbr;
 	shape.getMBR(mbr);
+    // copy the speed of low,high
 	Region vbr;
 	es->getVMBR(vbr);
 	assert(mbr.m_dimension == vbr.m_dimension);
@@ -283,7 +284,7 @@ void SpatialIndex::TPRTree::TPRTree::insertData(uint32_t len, const uint8_t* pDa
 		memcpy(buffer, pData, len);
 	}
 
-	m_currentTime = mr->m_startTime;
+	m_currentTime = mr->m_startTime; // current time is always increasing
 	insertData_impl(len, buffer, *mr, id);
 		// the buffer is stored in the tree. Do not delete here.
 }
@@ -1074,7 +1075,7 @@ SpatialIndex::id_type SpatialIndex::TPRTree::TPRTree::writeNode(Node* n)
 {
 	uint8_t* buffer;
 	uint32_t dataLength;
-	n->storeToByteArray(&buffer, dataLength);
+	n->storeToByteArray(&buffer, dataLength); // serialize node to the buffer
 
 	id_type page;
 	if (n->m_identifier < 0) page = StorageManager::NewPage;

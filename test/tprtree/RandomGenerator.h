@@ -107,8 +107,8 @@ public:
 
 	public:
 		int m_id;
-  		int m_st;
-  		int m_kt;
+  		int m_st; // st: reference time, (st stands for start time?)
+  		int m_kt; // next timestamp of update
 		double m_sx, m_sy;
 		double m_vx, m_vy;
 		bool m_outOfBounds;
@@ -120,8 +120,8 @@ public:
 	double generateSpeed();
 
 public:
-	int m_datasetSize;
-	int m_simulationLength;
+	int m_datasetSize; // number of objects
+	int m_simulationLength; // max timestamp of simulation
 	int m_initialDistribution;
 	int m_maximumUpdateInterval;
 	int m_queriesPerTimeInstant;
@@ -130,7 +130,7 @@ public:
 	int m_horizon;
 	int m_maxQueryInterval;
 	int m_minQueryInterval;
-	double m_agility;
+	double m_agility; // sets the max number of updates for each tick
 	double m_minSpeed;
 	double m_maxSpeed;
 	double m_speedMean;
@@ -138,8 +138,8 @@ public:
 	double m_maxX;
 	double m_maxY;
 
-	map<int, MyMovingObject*> m_dataset;
-	set<int>* m_updateArray;
+	map<int, MyMovingObject*> m_dataset; // key is id
+	set<int>* m_updateArray; // timestamp is index, set contains obj id
 	Tools::Random m_random;
 };
 
